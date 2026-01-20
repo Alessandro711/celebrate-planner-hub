@@ -5,29 +5,46 @@ import { Heart, Users, UserCheck, Wallet, CheckCircle, Clock, Calendar } from 'l
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { getGuests, getTasks, getVendors, getBudgetCategories, getSettings } from '@/lib/storage';
+import { 
+  subscribeToGuests, 
+  subscribeToTasks, 
+  subscribeToVendors, 
+  subscribeToBudgetCategories, 
+  subscribeToSettings 
+} from '@/lib/storage';
+import { Guest, Task, Vendor, BudgetCategory, WeddingSettings } from '@/lib/types';
 import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
-  const [settings, setSettings] = useState(getSettings());
-  const [guests, setGuests] = useState(getGuests());
-  const [tasks, setTasks] = useState(getTasks());
-  const [vendors, setVendors] = useState(getVendors());
-  const [budgetCategories, setBudgetCategories] = useState(getBudgetCategories());
+  const [settings, setSettings] = useState<WeddingSettings>({ coupleName: '', weddingDate: '', totalBudget: 0, venue: '' });
+  const [guests, setGuests] = useState<Guest[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [budgetCategories, setBudgetCategories] = useState<BudgetCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Refresh data on mount
   useEffect(() => {
-    setSettings(getSettings());
-    setGuests(getGuests());
-    setTasks(getTasks());
-    setVendors(getVendors());
-    setBudgetCategories(getBudgetCategories());
+    const unsubscribers: (() => void)[] = [];
+
+    // Subscribe to real-time updates
+    unsubscribers.push(subscribeToSettings(setSettings));
+    unsubscribers.push(subscribeToGuests(setGuests));
+    unsubscribers.push(subscribeToTasks(setTasks));
+    unsubscribers.push(subscribeToVendors(setVendors));
+    unsubscribers.push(subscribeToBudgetCategories(setBudgetCategories));
+
+    // Set loading to false after a short delay
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+
+    return () => {
+      unsubscribers.forEach(unsubscribe => unsubscribe());
+      clearTimeout(timer);
+    };
   }, []);
 
   // Calculate stats
   const confirmedGuests = guests.filter(g => g.status === 'confirmed').length;
   const totalGuests = guests.length;
-  const totalCompanions = guests.reduce((acc, g) => acc + g.companions, 0);
   const totalAttendees = confirmedGuests + guests.filter(g => g.status === 'confirmed').reduce((acc, g) => acc + g.companions, 0);
 
   const completedTasks = tasks.filter(t => t.completed).length;
@@ -38,7 +55,6 @@ export default function Dashboard() {
   const totalSpent = budgetCategories.reduce((acc, c) => acc + c.spent, 0);
   const budgetProgress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
-  const totalVendorValue = vendors.reduce((acc, v) => acc + v.totalValue, 0);
   const paidValue = vendors.reduce((acc, v) => 
     acc + v.payments.filter(p => p.paid).reduce((sum, p) => sum + p.amount, 0), 0
   );
@@ -46,6 +62,19 @@ export default function Dashboard() {
   // Days until wedding
   const weddingDate = settings.weddingDate ? parseISO(settings.weddingDate) : null;
   const daysUntilWedding = weddingDate ? differenceInDays(weddingDate, new Date()) : null;
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center space-y-4">
+            <Heart className="h-12 w-12 text-primary mx-auto animate-pulse" />
+            <p className="text-muted-foreground">Carregando...</p>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>

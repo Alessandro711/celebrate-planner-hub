@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Filter, UserCheck, Clock, UserX, Users, Trash2, Edit } from 'lucide-react';
+import { Plus, Search, UserCheck, Clock, UserX, Users, Trash2, Edit } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { getGuests, addGuest, updateGuest, deleteGuest } from '@/lib/storage';
+import { subscribeToGuests, addGuest, updateGuest, deleteGuest } from '@/lib/storage';
 import { Guest, GuestStatus, GuestGroup, GUEST_STATUS_LABELS, GUEST_GROUP_LABELS } from '@/lib/types';
 
 const statusIcons: Record<GuestStatus, React.ReactNode> = {
@@ -31,8 +31,8 @@ export default function Guests() {
   const [filterGroup, setFilterGroup] = useState<GuestGroup | 'all'>('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Form state
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -45,7 +45,8 @@ export default function Guests() {
   });
 
   useEffect(() => {
-    setGuests(getGuests());
+    const unsubscribe = subscribeToGuests(setGuests);
+    return () => unsubscribe();
   }, []);
 
   const filteredGuests = guests.filter(guest => {
@@ -96,22 +97,25 @@ export default function Guests() {
     setIsDialogOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingGuest) {
-      updateGuest(editingGuest.id, formData);
-    } else {
-      addGuest(formData);
+    setIsLoading(true);
+    try {
+      if (editingGuest) {
+        await updateGuest(editingGuest.id, formData);
+      } else {
+        await addGuest(formData);
+      }
+      setIsDialogOpen(false);
+      resetForm();
+    } finally {
+      setIsLoading(false);
     }
-    setGuests(getGuests());
-    setIsDialogOpen(false);
-    resetForm();
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Tem certeza que deseja remover este convidado?')) {
-      deleteGuest(id);
-      setGuests(getGuests());
+      await deleteGuest(id);
     }
   };
 
@@ -225,8 +229,8 @@ export default function Guests() {
                     onChange={e => setFormData({ ...formData, notes: e.target.value })}
                   />
                 </div>
-                <Button type="submit" className="w-full">
-                  {editingGuest ? 'Salvar Alterações' : 'Adicionar Convidado'}
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? 'Salvando...' : editingGuest ? 'Salvar Alterações' : 'Adicionar Convidado'}
                 </Button>
               </form>
             </DialogContent>
