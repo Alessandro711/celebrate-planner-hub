@@ -45,9 +45,6 @@ export default function Login() {
         <Card className="shadow-elegant border-primary/20">
           <CardHeader className="text-center">
             <CardTitle className="text-xl">Entrar</CardTitle>
-            <CardDescription>
-              Acesse sua conta para continuar
-            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
