@@ -8,7 +8,6 @@
 
 @layer base {
   :root {
-    /* Romantic color palette - soft rose, champagne, and gold */
     --background: 30 33% 98%;
     --foreground: 20 14% 20%;
 
@@ -18,19 +17,17 @@
     --popover: 0 0% 100%;
     --popover-foreground: 20 14% 20%;
 
-    /* Primary (was Rose/blush) -> now #3b5110 */
+    /* Primary -> #3b5110 */
     --primary: 86 67% 19%;
     --primary-foreground: 0 0% 100%;
 
-    /* Champagne secondary */
-    --secondary: 35 40% 92%;
-    --secondary-foreground: 20 14% 25%;
+    /* Secondary (former champagne base UI) */
+    --secondary: 77 35% 41%;
+    --secondary-foreground: 0 0% 100%;
 
-    /* Soft muted tones */
     --muted: 30 20% 94%;
     --muted-foreground: 20 10% 50%;
 
-    /* Gold accent */
     --accent: 40 65% 55%;
     --accent-foreground: 20 14% 15%;
 
@@ -40,12 +37,11 @@
     --border: 30 20% 88%;
     --input: 30 20% 88%;
 
-    /* Ring follows primary */
     --ring: 86 67% 19%;
 
     --radius: 0.75rem;
 
-    /* Sidebar styling (primary + ring updated) */
+    /* Sidebar */
     --sidebar-background: 350 45% 97%;
     --sidebar-foreground: 20 14% 30%;
     --sidebar-primary: 86 67% 19%;
@@ -55,10 +51,13 @@
     --sidebar-border: 350 20% 90%;
     --sidebar-ring: 86 67% 19%;
 
-    /* Custom wedding colors (rose updated to new green; rose-light adjusted to a soft green tint) */
+    /* Custom palette */
     --rose: 86 67% 19%;
     --rose-light: 86 40% 85%;
-    --champagne: 35 40% 85%;
+
+    /* Champagne replaced by #778c43 */
+    --champagne: 77 35% 41%;
+
     --gold: 40 65% 55%;
     --gold-light: 40 50% 90%;
     --sage: 140 20% 70%;
@@ -77,12 +76,11 @@
     --popover: 20 14% 12%;
     --popover-foreground: 30 20% 95%;
 
-    /* Primary (was Rose) -> now #3b5110 adapted for dark */
     --primary: 86 67% 25%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 20 14% 18%;
-    --secondary-foreground: 30 20% 95%;
+    --secondary: 77 35% 32%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 20 14% 18%;
     --muted-foreground: 30 15% 60%;
@@ -96,7 +94,6 @@
     --border: 20 14% 20%;
     --input: 20 14% 20%;
 
-    /* Ring follows primary */
     --ring: 86 67% 25%;
 
     --sidebar-background: 20 14% 8%;
@@ -108,10 +105,12 @@
     --sidebar-border: 20 14% 18%;
     --sidebar-ring: 86 67% 25%;
 
-    /* Custom wedding colors (rose updated to new green; rose-light adjusted for dark) */
     --rose: 86 67% 25%;
     --rose-light: 86 30% 20%;
-    --champagne: 35 30% 25%;
+
+    /* Champagne dark version */
+    --champagne: 77 35% 32%;
+
     --gold: 40 55% 50%;
     --gold-light: 40 30% 20%;
     --sage: 140 15% 40%;
@@ -141,16 +140,20 @@
       hsl(var(--gold-light)) 100%
     );
   }
-
+  
   .gradient-gold {
     background: linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(40 70% 60%) 100%);
   }
-
+  
   .shadow-romantic {
-    box-shadow: 0 4px 20px -5px hsl(var(--rose) / 0.15), 0 2px 8px -2px hsl(var(--rose) / 0.1);
+    box-shadow: 
+      0 4px 20px -5px hsl(var(--rose) / 0.15),
+      0 2px 8px -2px hsl(var(--rose) / 0.1);
   }
-
+  
   .shadow-elegant {
-    box-shadow: 0 10px 40px -10px hsl(var(--foreground) / 0.1), 0 4px 16px -4px hsl(var(--foreground) / 0.05);
+    box-shadow: 
+      0 10px 40px -10px hsl(var(--foreground) / 0.1),
+      0 4px 16px -4px hsl(var(--foreground) / 0.05);
   }
 }
