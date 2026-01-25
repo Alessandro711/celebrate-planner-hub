@@ -18,8 +18,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 20 14% 20%;
 
-    /* Rose/blush primary */
-    --primary: 350 60% 65%;
+    /* Primary (was Rose/blush) -> now #3b5110 */
+    --primary: 86 67% 19%;
     --primary-foreground: 0 0% 100%;
 
     /* Champagne secondary */
@@ -39,23 +39,25 @@
 
     --border: 30 20% 88%;
     --input: 30 20% 88%;
-    --ring: 350 60% 65%;
+
+    /* Ring follows primary */
+    --ring: 86 67% 19%;
 
     --radius: 0.75rem;
 
-    /* Sidebar styling */
+    /* Sidebar styling (primary + ring updated) */
     --sidebar-background: 350 45% 97%;
     --sidebar-foreground: 20 14% 30%;
-    --sidebar-primary: 350 60% 65%;
+    --sidebar-primary: 86 67% 19%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 350 30% 94%;
     --sidebar-accent-foreground: 20 14% 20%;
     --sidebar-border: 350 20% 90%;
-    --sidebar-ring: 350 60% 65%;
+    --sidebar-ring: 86 67% 19%;
 
-    /* Custom wedding colors */
-    --rose: 350 60% 65%;
-    --rose-light: 350 60% 92%;
+    /* Custom wedding colors (rose updated to new green; rose-light adjusted to a soft green tint) */
+    --rose: 86 67% 19%;
+    --rose-light: 86 40% 85%;
     --champagne: 35 40% 85%;
     --gold: 40 65% 55%;
     --gold-light: 40 50% 90%;
@@ -75,7 +77,8 @@
     --popover: 20 14% 12%;
     --popover-foreground: 30 20% 95%;
 
-    --primary: 350 55% 60%;
+    /* Primary (was Rose) -> now #3b5110 adapted for dark */
+    --primary: 86 67% 25%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 20 14% 18%;
@@ -92,19 +95,22 @@
 
     --border: 20 14% 20%;
     --input: 20 14% 20%;
-    --ring: 350 55% 60%;
+
+    /* Ring follows primary */
+    --ring: 86 67% 25%;
 
     --sidebar-background: 20 14% 8%;
     --sidebar-foreground: 30 20% 90%;
-    --sidebar-primary: 350 55% 60%;
+    --sidebar-primary: 86 67% 25%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 20 14% 15%;
     --sidebar-accent-foreground: 30 20% 90%;
     --sidebar-border: 20 14% 18%;
-    --sidebar-ring: 350 55% 60%;
+    --sidebar-ring: 86 67% 25%;
 
-    --rose: 350 55% 60%;
-    --rose-light: 350 30% 20%;
+    /* Custom wedding colors (rose updated to new green; rose-light adjusted for dark) */
+    --rose: 86 67% 25%;
+    --rose-light: 86 30% 20%;
     --champagne: 35 30% 25%;
     --gold: 40 55% 50%;
     --gold-light: 40 30% 20%;
@@ -128,17 +134,22 @@
 
 @layer utilities {
   .gradient-romantic {
-    background: linear-gradient(135deg, hsl(var(--rose-light)) 0%, hsl(var(--champagne)) 50%, hsl(var(--gold-light)) 100%);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--rose-light)) 0%,
+      hsl(var(--champagne)) 50%,
+      hsl(var(--gold-light)) 100%
+    );
   }
-  
+
   .gradient-gold {
     background: linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(40 70% 60%) 100%);
   }
-  
+
   .shadow-romantic {
     box-shadow: 0 4px 20px -5px hsl(var(--rose) / 0.15), 0 2px 8px -2px hsl(var(--rose) / 0.1);
   }
-  
+
   .shadow-elegant {
     box-shadow: 0 10px 40px -10px hsl(var(--foreground) / 0.1), 0 4px 16px -4px hsl(var(--foreground) / 0.05);
   }
