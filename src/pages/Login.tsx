@@ -40,7 +40,7 @@ export default function Login() {
             </div>
           </div>
           <h1 className="font-display text-4xl font-bold text-foreground">
-            WeddingPlanner
+            
           </h1>
           <p className="text-muted-foreground">
             Gerencie todos os detalhes do seu grande dia
