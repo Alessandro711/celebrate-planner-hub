@@ -103,10 +103,6 @@ export default function Login() {
             </form>
           </CardContent>
         </Card>
-
-        <p className="text-center text-sm text-muted-foreground">
-          Feito com ❤️ para o seu casamento
-        </p>
       </div>
     </div>
   );
