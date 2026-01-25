@@ -39,9 +39,6 @@ export default function Login() {
               <Heart className="h-12 w-12 text-primary animate-pulse-soft" />
             </div>
           </div>
-          <h1 className="font-display text-4xl font-bold text-foreground">
-            
-          </h1>
           <p className="text-muted-foreground">
             Gerencie todos os detalhes do seu grande dia
           </p>
