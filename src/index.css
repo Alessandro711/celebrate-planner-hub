@@ -8,6 +8,7 @@
 
 @layer base {
   :root {
+    /* Base (mantive neutro claro) */
     --background: 30 33% 98%;
     --foreground: 20 14% 20%;
 
@@ -17,53 +18,66 @@
     --popover: 0 0% 100%;
     --popover-foreground: 20 14% 20%;
 
-    /* Primary -> #3b5110 */
-    --primary: 86 67% 19%;
+    /* ========= PALETA DA IMAGEM (HSL) =========
+       #628A4C -> 99 29% 42%
+       #AFBE6C -> 71 39% 58%
+       #C4E477 -> 78 67% 68%
+       #87B344 -> 84 45% 48%
+       #76993D -> 83 43% 42%
+    */
+
+    /* Primary -> #628A4C */
+    --primary: 99 29% 42%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary (former champagne base UI) */
-    --secondary: 77 35% 41%;
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary -> #AFBE6C */
+    --secondary: 71 39% 58%;
+    --secondary-foreground: 20 14% 15%;
 
-    --muted: 30 20% 94%;
-    --muted-foreground: 20 10% 50%;
+    /* Muted (puxado pro verde bem claro da paleta) */
+    --muted: 78 67% 92%;
+    --muted-foreground: 20 10% 45%;
 
-    --accent: 40 65% 55%;
+    /* Accent -> #C4E477 (highlight) */
+    --accent: 78 67% 68%;
     --accent-foreground: 20 14% 15%;
 
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 20% 88%;
-    --input: 30 20% 88%;
+    /* Border/Input (neutro claro com leve verde) */
+    --border: 78 30% 88%;
+    --input: 78 30% 88%;
 
-    --ring: 86 67% 19%;
+    /* Ring acompanha primary */
+    --ring: 99 29% 42%;
 
     --radius: 0.75rem;
 
-    /* Sidebar */
-    --sidebar-background: 350 45% 97%;
-    --sidebar-foreground: 20 14% 30%;
-    --sidebar-primary: 86 67% 19%;
+    /* Sidebar (puxada pro oliva claro) */
+    --sidebar-background: 71 39% 90%;
+    --sidebar-foreground: 20 14% 25%;
+    --sidebar-primary: 99 29% 42%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 350 30% 94%;
+    --sidebar-accent: 78 67% 88%;
     --sidebar-accent-foreground: 20 14% 20%;
-    --sidebar-border: 350 20% 90%;
-    --sidebar-ring: 86 67% 19%;
+    --sidebar-border: 71 20% 85%;
+    --sidebar-ring: 99 29% 42%;
 
-    /* Custom palette */
-    --rose: 86 67% 19%;
-    --rose-light: 86 40% 85%;
+    /* Custom palette (tudo dentro da paleta da imagem) */
+    --rose: 99 29% 42%;        /* #628A4C */
+    --rose-light: 78 67% 68%;  /* #C4E477 */
 
-    /* Champagne replaced by #778c43 */
-    --champagne: 77 35% 41%;
+    --champagne: 71 39% 58%;   /* #AFBE6C */
 
-    --gold: 40 65% 55%;
-    --gold-light: 40 50% 90%;
-    --sage: 140 20% 70%;
-    --sage-light: 140 20% 92%;
-    --success: 145 60% 45%;
-    --warning: 35 90% 55%;
+    --gold: 84 45% 48%;        /* #87B344 */
+    --gold-light: 78 67% 68%;  /* #C4E477 */
+
+    --sage: 83 43% 42%;        /* #76993D */
+    --sage-light: 71 39% 58%;  /* #AFBE6C */
+
+    --success: 84 45% 48%;     /* #87B344 */
+    --warning: 78 67% 68%;     /* #C4E477 */
   }
 
   .dark {
@@ -76,16 +90,17 @@
     --popover: 20 14% 12%;
     --popover-foreground: 30 20% 95%;
 
-    --primary: 86 67% 25%;
+    /* Dark versions (mesma paleta, menos luminância) */
+    --primary: 99 29% 28%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 77 35% 32%;
+    --secondary: 71 39% 34%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 20 14% 18%;
     --muted-foreground: 30 15% 60%;
 
-    --accent: 40 55% 50%;
+    --accent: 78 45% 40%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 45%;
@@ -94,29 +109,30 @@
     --border: 20 14% 20%;
     --input: 20 14% 20%;
 
-    --ring: 86 67% 25%;
+    --ring: 99 29% 35%;
 
     --sidebar-background: 20 14% 8%;
     --sidebar-foreground: 30 20% 90%;
-    --sidebar-primary: 86 67% 25%;
+    --sidebar-primary: 99 29% 35%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 20 14% 15%;
     --sidebar-accent-foreground: 30 20% 90%;
     --sidebar-border: 20 14% 18%;
-    --sidebar-ring: 86 67% 25%;
+    --sidebar-ring: 99 29% 35%;
 
-    --rose: 86 67% 25%;
-    --rose-light: 86 30% 20%;
+    --rose: 99 29% 35%;
+    --rose-light: 78 35% 22%;
 
-    /* Champagne dark version */
-    --champagne: 77 35% 32%;
+    --champagne: 71 39% 30%;
 
-    --gold: 40 55% 50%;
-    --gold-light: 40 30% 20%;
-    --sage: 140 15% 40%;
-    --sage-light: 140 15% 18%;
-    --success: 145 50% 40%;
-    --warning: 35 80% 50%;
+    --gold: 84 35% 32%;
+    --gold-light: 78 35% 22%;
+
+    --sage: 83 35% 28%;
+    --sage-light: 71 30% 25%;
+
+    --success: 84 35% 32%;
+    --warning: 78 45% 40%;
   }
 }
 
@@ -142,7 +158,11 @@
   }
   
   .gradient-gold {
-    background: linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(40 70% 60%) 100%);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--gold)) 0%,
+      hsl(var(--accent)) 100%
+    );
   }
   
   .shadow-romantic {
