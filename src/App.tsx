@@ -22,7 +22,11 @@ const queryClient = new QueryClient();
 function PaletteLoader() {
   useEffect(() => {
     const unsub = subscribeToSettings((s) => {
-      if (s.colorPalette) applyPalette(s.colorPalette);
+      if (s.colorPalette === 'custom' && s.customColors) {
+        applyCustomColors(s.customColors.primary, s.customColors.secondary, s.customColors.accent);
+      } else if (s.colorPalette) {
+        applyPalette(s.colorPalette);
+      }
     });
     return () => unsub();
   }, []);
