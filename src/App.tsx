@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { subscribeToSettings } from "@/lib/storage";
-import { applyPalette } from "@/lib/palettes";
+import { applyPalette, applyCustomColors } from "@/lib/palettes";
 import Dashboard from "./pages/Dashboard";
 import Guests from "./pages/Guests";
 import WeddingParty from "./pages/WeddingParty";
