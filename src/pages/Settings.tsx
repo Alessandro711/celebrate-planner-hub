@@ -14,7 +14,6 @@ import { cn } from '@/lib/utils';
 const DEFAULT_CUSTOM: CustomColors = { primary: '#628A4C', secondary: '#AFBE6C', accent: '#C4E477' };
 
 export default function Settings() {
-  const navigate = useNavigate();
   const [settings, setSettings] = useState<WeddingSettings>({ coupleName: '', weddingDate: '', totalBudget: 0, venue: '', colorPalette: 'green' });
   const [customColors, setCustomColors] = useState<CustomColors>(DEFAULT_CUSTOM);
   const [isSaving, setIsSaving] = useState(false);
