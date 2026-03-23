@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Save, Heart, Calendar, LogOut, Palette, Paintbrush } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Save, Heart, Calendar, Palette, Paintbrush } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { subscribeToSettings, saveSettings } from '@/lib/storage';
-import { logout } from '@/lib/auth';
 import { WeddingSettings, CustomColors } from '@/lib/types';
 import { COLOR_PALETTES, applyPalette, applyCustomColors } from '@/lib/palettes';
 import { toast } from 'sonner';
