@@ -69,12 +69,19 @@ export interface Task {
   dueDate?: string;
 }
 
+export interface CustomColors {
+  primary: string;
+  secondary: string;
+  accent: string;
+}
+
 export interface WeddingSettings {
   coupleName: string;
   weddingDate: string;
   totalBudget: number;
   venue?: string;
   colorPalette?: string;
+  customColors?: CustomColors;
 }
 
 export const GUEST_STATUS_LABELS: Record<GuestStatus, string> = {
