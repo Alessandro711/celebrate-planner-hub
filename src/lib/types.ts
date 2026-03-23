@@ -74,6 +74,7 @@ export interface WeddingSettings {
   weddingDate: string;
   totalBudget: number;
   venue?: string;
+  colorPalette?: string;
 }
 
 export const GUEST_STATUS_LABELS: Record<GuestStatus, string> = {
