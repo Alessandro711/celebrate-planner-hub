@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Heart, Calendar, LogOut, Palette } from 'lucide-react';
+import { Save, Heart, Calendar, LogOut, Palette, Paintbrush } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -8,26 +8,45 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label';
 import { subscribeToSettings, saveSettings } from '@/lib/storage';
 import { logout } from '@/lib/auth';
-import { WeddingSettings } from '@/lib/types';
-import { COLOR_PALETTES, applyPalette } from '@/lib/palettes';
+import { WeddingSettings, CustomColors } from '@/lib/types';
+import { COLOR_PALETTES, applyPalette, applyCustomColors } from '@/lib/palettes';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+
+const DEFAULT_CUSTOM: CustomColors = { primary: '#628A4C', secondary: '#AFBE6C', accent: '#C4E477' };
 
 export default function Settings() {
   const navigate = useNavigate();
   const [settings, setSettings] = useState<WeddingSettings>({ coupleName: '', weddingDate: '', totalBudget: 0, venue: '', colorPalette: 'green' });
+  const [customColors, setCustomColors] = useState<CustomColors>(DEFAULT_CUSTOM);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => { const unsub = subscribeToSettings(setSettings); return () => unsub(); }, []);
+  useEffect(() => {
+    const unsub = subscribeToSettings((s) => {
+      setSettings(s);
+      if (s.customColors) setCustomColors(s.customColors);
+    });
+    return () => unsub();
+  }, []);
 
   const handlePaletteChange = (paletteId: string) => {
     setSettings({ ...settings, colorPalette: paletteId });
     applyPalette(paletteId);
   };
 
+  const handleCustomColorChange = (key: keyof CustomColors, value: string) => {
+    const updated = { ...customColors, [key]: value };
+    setCustomColors(updated);
+    setSettings({ ...settings, colorPalette: 'custom', customColors: updated });
+    applyCustomColors(updated.primary, updated.secondary, updated.accent);
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
-    await saveSettings(settings);
+    const toSave = settings.colorPalette === 'custom'
+      ? { ...settings, customColors }
+      : { ...settings, customColors: undefined };
+    await saveSettings(toSave);
     setIsSaving(false);
     toast.success('Configurações salvas!');
   };
@@ -36,6 +55,8 @@ export default function Settings() {
     logout();
     navigate('/login');
   };
+
+  const isCustom = settings.colorPalette === 'custom';
 
   return (
     <AppLayout>
@@ -53,8 +74,8 @@ export default function Settings() {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="flex items-center gap-2"><Palette className="h-5 w-5 text-primary" />Paleta de Cores</CardTitle><CardDescription>Escolha o tema visual do aplicativo</CardDescription></CardHeader>
-          <CardContent>
+          <CardHeader><CardTitle className="flex items-center gap-2"><Palette className="h-5 w-5 text-primary" />Paleta de Cores</CardTitle><CardDescription>Escolha um tema pronto ou personalize suas cores</CardDescription></CardHeader>
+          <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {COLOR_PALETTES.map(palette => (
                 <button
@@ -75,7 +96,96 @@ export default function Settings() {
                   <span className="text-sm font-medium">{palette.name}</span>
                 </button>
               ))}
+
+              {/* Custom palette button */}
+              <button
+                onClick={() => handleCustomColorChange('primary', customColors.primary)}
+                className={cn(
+                  "flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left",
+                  isCustom
+                    ? "border-primary bg-muted shadow-sm"
+                    : "border-border hover:border-primary/40"
+                )}
+              >
+                <div className="flex gap-1">
+                  <div className="w-6 h-6 rounded-full border border-border/50" style={{ backgroundColor: customColors.primary }} />
+                  <div className="w-6 h-6 rounded-full border border-border/50" style={{ backgroundColor: customColors.secondary }} />
+                  <div className="w-6 h-6 rounded-full border border-border/50" style={{ backgroundColor: customColors.accent }} />
+                  <div className="w-6 h-6 rounded-full border border-border/50 flex items-center justify-center bg-background">
+                    <Paintbrush className="w-3.5 h-3.5 text-muted-foreground" />
+                  </div>
+                </div>
+                <span className="text-sm font-medium">Personalizado</span>
+              </button>
             </div>
+
+            {/* Custom color pickers */}
+            {isCustom && (
+              <div className="space-y-3 p-4 rounded-lg border border-border bg-muted/30 animate-fade-in">
+                <p className="text-sm font-medium text-foreground">Escolha suas cores:</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs">Cor Principal</Label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={customColors.primary}
+                        onChange={e => handleCustomColorChange('primary', e.target.value)}
+                        className="w-10 h-10 rounded-lg border border-border cursor-pointer"
+                      />
+                      <Input
+                        value={customColors.primary}
+                        onChange={e => handleCustomColorChange('primary', e.target.value)}
+                        className="flex-1 text-xs font-mono"
+                        maxLength={7}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Cor Secundária</Label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={customColors.secondary}
+                        onChange={e => handleCustomColorChange('secondary', e.target.value)}
+                        className="w-10 h-10 rounded-lg border border-border cursor-pointer"
+                      />
+                      <Input
+                        value={customColors.secondary}
+                        onChange={e => handleCustomColorChange('secondary', e.target.value)}
+                        className="flex-1 text-xs font-mono"
+                        maxLength={7}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Cor de Destaque</Label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={customColors.accent}
+                        onChange={e => handleCustomColorChange('accent', e.target.value)}
+                        className="w-10 h-10 rounded-lg border border-border cursor-pointer"
+                      />
+                      <Input
+                        value={customColors.accent}
+                        onChange={e => handleCustomColorChange('accent', e.target.value)}
+                        className="flex-1 text-xs font-mono"
+                        maxLength={7}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <div className="text-xs text-muted-foreground">Pré-visualização:</div>
+                  <div className="flex gap-1">
+                    <div className="w-8 h-4 rounded" style={{ backgroundColor: customColors.primary }} />
+                    <div className="w-8 h-4 rounded" style={{ backgroundColor: customColors.secondary }} />
+                    <div className="w-8 h-4 rounded" style={{ backgroundColor: customColors.accent }} />
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
