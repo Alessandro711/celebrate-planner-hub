@@ -188,11 +188,6 @@ export default function Settings() {
 
         <Button onClick={handleSave} disabled={isSaving} className="w-full gap-2"><Save className="h-4 w-4" />{isSaving ? 'Salvando...' : 'Salvar Configurações'}</Button>
 
-        <Card className="border-destructive/30">
-          <CardContent className="py-6">
-            <Button variant="outline" onClick={handleLogout} className="w-full gap-2 text-destructive hover:text-destructive"><LogOut className="h-4 w-4" />Sair da Conta</Button>
-          </CardContent>
-        </Card>
 
         <Card className="border-dashed"><CardContent className="py-6 text-center"><p className="text-sm text-muted-foreground">☁️ Os dados são salvos na nuvem e sincronizados entre dispositivos.</p></CardContent></Card>
       </div>
