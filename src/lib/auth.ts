@@ -1,40 +1,46 @@
-const VALID_CREDENTIALS = {
-  login: "ALESSANDRO E VANESSA",
-  password: "100120"
-};
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  User,
+} from "firebase/auth";
+import { auth } from "./firebase";
 
-const AUTH_STORAGE_KEY = 'wedding_auth';
+export type { User };
 
-export interface AuthState {
-  isAuthenticated: boolean;
-  user: string | null;
-}
+let currentUser: User | null = null;
 
-export function login(username: string, password: string): boolean {
-  if (username.toUpperCase() === VALID_CREDENTIALS.login && password === VALID_CREDENTIALS.password) {
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ user: VALID_CREDENTIALS.login }));
-    return true;
-  }
-  return false;
-}
+// Listen to auth state
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+});
 
-export function logout(): void {
-  localStorage.removeItem(AUTH_STORAGE_KEY);
-}
-
-export function getAuthState(): AuthState {
-  try {
-    const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (stored) {
-      const { user } = JSON.parse(stored);
-      return { isAuthenticated: true, user };
-    }
-  } catch {
-    // Invalid stored data
-  }
-  return { isAuthenticated: false, user: null };
+export function getCurrentUser(): User | null {
+  return currentUser || auth.currentUser;
 }
 
 export function isAuthenticated(): boolean {
-  return getAuthState().isAuthenticated;
+  return !!(currentUser || auth.currentUser);
+}
+
+export function getCurrentUserId(): string | null {
+  const user = getCurrentUser();
+  return user?.uid || null;
+}
+
+export async function registerUser(email: string, password: string): Promise<void> {
+  await createUserWithEmailAndPassword(auth, email, password);
+}
+
+export async function loginUser(email: string, password: string): Promise<void> {
+  await signInWithEmailAndPassword(auth, email, password);
+}
+
+export async function logout(): Promise<void> {
+  await signOut(auth);
+}
+
+export function onAuthChange(callback: (user: User | null) => void): () => void {
+  return onAuthStateChanged(auth, callback);
 }
