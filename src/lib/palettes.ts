@@ -178,12 +178,77 @@ export const COLOR_PALETTES: ColorPalette[] = [
   },
 ];
 
+export function hexToHsl(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+  }
+  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+}
+
+function generateVarsFromHex(primary: string, secondary: string, accent: string): Record<string, string> {
+  const pHsl = hexToHsl(primary);
+  const sHsl = hexToHsl(secondary);
+  const aHsl = hexToHsl(accent);
+  
+  // Parse HSL to get components for lighter/darker variants
+  const [pH] = pHsl.split(' ');
+  const [sH] = sHsl.split(' ');
+  
+  return {
+    '--primary': pHsl,
+    '--primary-foreground': '0 0% 100%',
+    '--secondary': sHsl,
+    '--secondary-foreground': '20 14% 15%',
+    '--accent': aHsl,
+    '--accent-foreground': '20 14% 15%',
+    '--muted': `${pH} 40% 93%`,
+    '--ring': pHsl,
+    '--border': `${pH} 25% 88%`,
+    '--input': `${pH} 25% 88%`,
+    '--sidebar-background': `${sH} 30% 92%`,
+    '--sidebar-foreground': '20 14% 25%',
+    '--sidebar-primary': pHsl,
+    '--sidebar-primary-foreground': '0 0% 100%',
+    '--sidebar-accent': `${pH} 40% 88%`,
+    '--sidebar-accent-foreground': '20 14% 20%',
+    '--sidebar-border': `${sH} 15% 85%`,
+    '--sidebar-ring': pHsl,
+    '--rose': pHsl,
+    '--rose-light': aHsl,
+    '--champagne': sHsl,
+    '--gold': pHsl,
+    '--gold-light': aHsl,
+    '--sage': pHsl,
+    '--sage-light': sHsl,
+    '--success': '150 45% 48%',
+    '--warning': '40 67% 68%',
+  };
+}
+
 export function applyPalette(paletteId: string) {
   const palette = COLOR_PALETTES.find(p => p.id === paletteId);
   if (!palette) return;
 
   const root = document.documentElement;
   Object.entries(palette.vars).forEach(([key, value]) => {
+    root.style.setProperty(key, value);
+  });
+}
+
+export function applyCustomColors(primary: string, secondary: string, accent: string) {
+  const vars = generateVarsFromHex(primary, secondary, accent);
+  const root = document.documentElement;
+  Object.entries(vars).forEach(([key, value]) => {
     root.style.setProperty(key, value);
   });
 }
