@@ -1,19 +1,15 @@
 import { Guest, WeddingPartyMember, Vendor, BudgetCategory, Task, WeddingSettings } from './types';
 import { database, ref, get, set, onValue } from './firebase';
+import { getCurrentUserId } from './auth';
 
-const STORAGE_PATHS = {
-  guests: 'wedding/guests',
-  weddingParty: 'wedding/weddingParty',
-  vendors: 'wedding/vendors',
-  budgetCategories: 'wedding/budgetCategories',
-  tasks: 'wedding/tasks',
-  settings: 'wedding/settings',
-} as const;
+function getUserPath(subPath: string): string {
+  const uid = getCurrentUserId();
+  if (!uid) throw new Error('Usuário não autenticado');
+  return `weddings/${uid}/${subPath}`;
+}
 
-// Cache for current data
 const dataCache: Record<string, any> = {};
 
-// Default values
 const DEFAULT_BUDGET_CATEGORIES: BudgetCategory[] = [
   { id: '1', name: 'Local e Recepção', planned: 0, spent: 0, color: 'rose' },
   { id: '2', name: 'Buffet e Bebidas', planned: 0, spent: 0, color: 'gold' },
@@ -55,19 +51,16 @@ const DEFAULT_SETTINGS: WeddingSettings = {
   venue: '',
 };
 
-// Generic Firebase functions
 async function getFromFirebase<T>(path: string, defaultValue: T): Promise<T> {
   try {
     const snapshot = await get(ref(database, path));
     if (snapshot.exists()) {
       const data = snapshot.val();
-      // Convert object to array if needed (Firebase stores arrays as objects)
       if (Array.isArray(defaultValue) && typeof data === 'object' && !Array.isArray(data)) {
         return Object.values(data) as T;
       }
       return data as T;
     }
-    // If no data exists, save default value to Firebase
     await setToFirebase(path, defaultValue);
     return defaultValue;
   } catch (error) {
@@ -85,18 +78,16 @@ async function setToFirebase<T>(path: string, value: T): Promise<void> {
   }
 }
 
-// Subscribe to real-time updates
 export function subscribeToData<T>(
-  path: string, 
+  path: string,
   defaultValue: T,
   callback: (data: T) => void
 ): () => void {
   const dbRef = ref(database, path);
-  
+
   const unsubscribe = onValue(dbRef, (snapshot) => {
     if (snapshot.exists()) {
       const data = snapshot.val();
-      // Convert object to array if needed
       if (Array.isArray(defaultValue) && typeof data === 'object' && !Array.isArray(data)) {
         callback(Object.values(data) as T);
       } else {
@@ -115,13 +106,11 @@ export function subscribeToData<T>(
 
 // Guests
 export async function getGuests(): Promise<Guest[]> {
-  return getFromFirebase<Guest[]>(STORAGE_PATHS.guests, []);
+  return getFromFirebase<Guest[]>(getUserPath('guests'), []);
 }
-
 export async function saveGuests(guests: Guest[]): Promise<void> {
-  await setToFirebase(STORAGE_PATHS.guests, guests);
+  await setToFirebase(getUserPath('guests'), guests);
 }
-
 export async function addGuest(guest: Omit<Guest, 'id'>): Promise<Guest> {
   const guests = await getGuests();
   const newGuest: Guest = { ...guest, id: crypto.randomUUID() };
@@ -129,34 +118,26 @@ export async function addGuest(guest: Omit<Guest, 'id'>): Promise<Guest> {
   await saveGuests(guests);
   return newGuest;
 }
-
 export async function updateGuest(id: string, updates: Partial<Guest>): Promise<void> {
   const guests = await getGuests();
   const index = guests.findIndex(g => g.id === id);
-  if (index !== -1) {
-    guests[index] = { ...guests[index], ...updates };
-    await saveGuests(guests);
-  }
+  if (index !== -1) { guests[index] = { ...guests[index], ...updates }; await saveGuests(guests); }
 }
-
 export async function deleteGuest(id: string): Promise<void> {
   const guests = (await getGuests()).filter(g => g.id !== id);
   await saveGuests(guests);
 }
-
 export function subscribeToGuests(callback: (guests: Guest[]) => void): () => void {
-  return subscribeToData<Guest[]>(STORAGE_PATHS.guests, [], callback);
+  return subscribeToData<Guest[]>(getUserPath('guests'), [], callback);
 }
 
 // Wedding Party
 export async function getWeddingParty(): Promise<WeddingPartyMember[]> {
-  return getFromFirebase<WeddingPartyMember[]>(STORAGE_PATHS.weddingParty, []);
+  return getFromFirebase<WeddingPartyMember[]>(getUserPath('weddingParty'), []);
 }
-
 export async function saveWeddingParty(members: WeddingPartyMember[]): Promise<void> {
-  await setToFirebase(STORAGE_PATHS.weddingParty, members);
+  await setToFirebase(getUserPath('weddingParty'), members);
 }
-
 export async function addWeddingPartyMember(member: Omit<WeddingPartyMember, 'id'>): Promise<WeddingPartyMember> {
   const members = await getWeddingParty();
   const newMember: WeddingPartyMember = { ...member, id: crypto.randomUUID() };
@@ -164,34 +145,26 @@ export async function addWeddingPartyMember(member: Omit<WeddingPartyMember, 'id
   await saveWeddingParty(members);
   return newMember;
 }
-
 export async function updateWeddingPartyMember(id: string, updates: Partial<WeddingPartyMember>): Promise<void> {
   const members = await getWeddingParty();
   const index = members.findIndex(m => m.id === id);
-  if (index !== -1) {
-    members[index] = { ...members[index], ...updates };
-    await saveWeddingParty(members);
-  }
+  if (index !== -1) { members[index] = { ...members[index], ...updates }; await saveWeddingParty(members); }
 }
-
 export async function deleteWeddingPartyMember(id: string): Promise<void> {
   const members = (await getWeddingParty()).filter(m => m.id !== id);
   await saveWeddingParty(members);
 }
-
 export function subscribeToWeddingParty(callback: (members: WeddingPartyMember[]) => void): () => void {
-  return subscribeToData<WeddingPartyMember[]>(STORAGE_PATHS.weddingParty, [], callback);
+  return subscribeToData<WeddingPartyMember[]>(getUserPath('weddingParty'), [], callback);
 }
 
 // Vendors
 export async function getVendors(): Promise<Vendor[]> {
-  return getFromFirebase<Vendor[]>(STORAGE_PATHS.vendors, []);
+  return getFromFirebase<Vendor[]>(getUserPath('vendors'), []);
 }
-
 export async function saveVendors(vendors: Vendor[]): Promise<void> {
-  await setToFirebase(STORAGE_PATHS.vendors, vendors);
+  await setToFirebase(getUserPath('vendors'), vendors);
 }
-
 export async function addVendor(vendor: Omit<Vendor, 'id'>): Promise<Vendor> {
   const vendors = await getVendors();
   const newVendor: Vendor = { ...vendor, id: crypto.randomUUID() };
@@ -199,56 +172,42 @@ export async function addVendor(vendor: Omit<Vendor, 'id'>): Promise<Vendor> {
   await saveVendors(vendors);
   return newVendor;
 }
-
 export async function updateVendor(id: string, updates: Partial<Vendor>): Promise<void> {
   const vendors = await getVendors();
   const index = vendors.findIndex(v => v.id === id);
-  if (index !== -1) {
-    vendors[index] = { ...vendors[index], ...updates };
-    await saveVendors(vendors);
-  }
+  if (index !== -1) { vendors[index] = { ...vendors[index], ...updates }; await saveVendors(vendors); }
 }
-
 export async function deleteVendor(id: string): Promise<void> {
   const vendors = (await getVendors()).filter(v => v.id !== id);
   await saveVendors(vendors);
 }
-
 export function subscribeToVendors(callback: (vendors: Vendor[]) => void): () => void {
-  return subscribeToData<Vendor[]>(STORAGE_PATHS.vendors, [], callback);
+  return subscribeToData<Vendor[]>(getUserPath('vendors'), [], callback);
 }
 
 // Budget Categories
 export async function getBudgetCategories(): Promise<BudgetCategory[]> {
-  return getFromFirebase<BudgetCategory[]>(STORAGE_PATHS.budgetCategories, DEFAULT_BUDGET_CATEGORIES);
+  return getFromFirebase<BudgetCategory[]>(getUserPath('budgetCategories'), DEFAULT_BUDGET_CATEGORIES);
 }
-
 export async function saveBudgetCategories(categories: BudgetCategory[]): Promise<void> {
-  await setToFirebase(STORAGE_PATHS.budgetCategories, categories);
+  await setToFirebase(getUserPath('budgetCategories'), categories);
 }
-
 export async function updateBudgetCategory(id: string, updates: Partial<BudgetCategory>): Promise<void> {
   const categories = await getBudgetCategories();
   const index = categories.findIndex(c => c.id === id);
-  if (index !== -1) {
-    categories[index] = { ...categories[index], ...updates };
-    await saveBudgetCategories(categories);
-  }
+  if (index !== -1) { categories[index] = { ...categories[index], ...updates }; await saveBudgetCategories(categories); }
 }
-
 export function subscribeToBudgetCategories(callback: (categories: BudgetCategory[]) => void): () => void {
-  return subscribeToData<BudgetCategory[]>(STORAGE_PATHS.budgetCategories, DEFAULT_BUDGET_CATEGORIES, callback);
+  return subscribeToData<BudgetCategory[]>(getUserPath('budgetCategories'), DEFAULT_BUDGET_CATEGORIES, callback);
 }
 
 // Tasks
 export async function getTasks(): Promise<Task[]> {
-  return getFromFirebase<Task[]>(STORAGE_PATHS.tasks, DEFAULT_TASKS);
+  return getFromFirebase<Task[]>(getUserPath('tasks'), DEFAULT_TASKS);
 }
-
 export async function saveTasks(tasks: Task[]): Promise<void> {
-  await setToFirebase(STORAGE_PATHS.tasks, tasks);
+  await setToFirebase(getUserPath('tasks'), tasks);
 }
-
 export async function addTask(task: Omit<Task, 'id'>): Promise<Task> {
   const tasks = await getTasks();
   const newTask: Task = { ...task, id: crypto.randomUUID() };
@@ -256,34 +215,26 @@ export async function addTask(task: Omit<Task, 'id'>): Promise<Task> {
   await saveTasks(tasks);
   return newTask;
 }
-
 export async function updateTask(id: string, updates: Partial<Task>): Promise<void> {
   const tasks = await getTasks();
   const index = tasks.findIndex(t => t.id === id);
-  if (index !== -1) {
-    tasks[index] = { ...tasks[index], ...updates };
-    await saveTasks(tasks);
-  }
+  if (index !== -1) { tasks[index] = { ...tasks[index], ...updates }; await saveTasks(tasks); }
 }
-
 export async function deleteTask(id: string): Promise<void> {
   const tasks = (await getTasks()).filter(t => t.id !== id);
   await saveTasks(tasks);
 }
-
 export function subscribeToTasks(callback: (tasks: Task[]) => void): () => void {
-  return subscribeToData<Task[]>(STORAGE_PATHS.tasks, DEFAULT_TASKS, callback);
+  return subscribeToData<Task[]>(getUserPath('tasks'), DEFAULT_TASKS, callback);
 }
 
 // Settings
 export async function getSettings(): Promise<WeddingSettings> {
-  return getFromFirebase<WeddingSettings>(STORAGE_PATHS.settings, DEFAULT_SETTINGS);
+  return getFromFirebase<WeddingSettings>(getUserPath('settings'), DEFAULT_SETTINGS);
 }
-
 export async function saveSettings(settings: WeddingSettings): Promise<void> {
-  await setToFirebase(STORAGE_PATHS.settings, settings);
+  await setToFirebase(getUserPath('settings'), settings);
 }
-
 export function subscribeToSettings(callback: (settings: WeddingSettings) => void): () => void {
-  return subscribeToData<WeddingSettings>(STORAGE_PATHS.settings, DEFAULT_SETTINGS, callback);
+  return subscribeToData<WeddingSettings>(getUserPath('settings'), DEFAULT_SETTINGS, callback);
 }

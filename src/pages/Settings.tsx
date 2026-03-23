@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Save, Heart, Calendar, LogOut, Palette, Paintbrush } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Save, Heart, Calendar, Palette, Paintbrush } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { subscribeToSettings, saveSettings } from '@/lib/storage';
-import { logout } from '@/lib/auth';
 import { WeddingSettings, CustomColors } from '@/lib/types';
 import { COLOR_PALETTES, applyPalette, applyCustomColors } from '@/lib/palettes';
 import { toast } from 'sonner';
@@ -16,7 +14,6 @@ import { cn } from '@/lib/utils';
 const DEFAULT_CUSTOM: CustomColors = { primary: '#628A4C', secondary: '#AFBE6C', accent: '#C4E477' };
 
 export default function Settings() {
-  const navigate = useNavigate();
   const [settings, setSettings] = useState<WeddingSettings>({ coupleName: '', weddingDate: '', totalBudget: 0, venue: '', colorPalette: 'green' });
   const [customColors, setCustomColors] = useState<CustomColors>(DEFAULT_CUSTOM);
   const [isSaving, setIsSaving] = useState(false);
@@ -51,10 +48,6 @@ export default function Settings() {
     toast.success('Configurações salvas!');
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
 
   const isCustom = settings.colorPalette === 'custom';
 
@@ -191,11 +184,6 @@ export default function Settings() {
 
         <Button onClick={handleSave} disabled={isSaving} className="w-full gap-2"><Save className="h-4 w-4" />{isSaving ? 'Salvando...' : 'Salvar Configurações'}</Button>
 
-        <Card className="border-destructive/30">
-          <CardContent className="py-6">
-            <Button variant="outline" onClick={handleLogout} className="w-full gap-2 text-destructive hover:text-destructive"><LogOut className="h-4 w-4" />Sair da Conta</Button>
-          </CardContent>
-        </Card>
 
         <Card className="border-dashed"><CardContent className="py-6 text-center"><p className="text-sm text-muted-foreground">☁️ Os dados são salvos na nuvem e sincronizados entre dispositivos.</p></CardContent></Card>
       </div>
