@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { subscribeToSettings } from "@/lib/storage";
-import { applyPalette } from "@/lib/palettes";
+import { applyPalette, applyCustomColors } from "@/lib/palettes";
 import Dashboard from "./pages/Dashboard";
 import Guests from "./pages/Guests";
 import WeddingParty from "./pages/WeddingParty";
@@ -22,7 +22,11 @@ const queryClient = new QueryClient();
 function PaletteLoader() {
   useEffect(() => {
     const unsub = subscribeToSettings((s) => {
-      if (s.colorPalette) applyPalette(s.colorPalette);
+      if (s.colorPalette === 'custom' && s.customColors) {
+        applyCustomColors(s.customColors.primary, s.customColors.secondary, s.customColors.accent);
+      } else if (s.colorPalette) {
+        applyPalette(s.colorPalette);
+      }
     });
     return () => unsub();
   }, []);
