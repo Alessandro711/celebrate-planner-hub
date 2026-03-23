@@ -48,10 +48,6 @@ export default function Settings() {
     toast.success('Configurações salvas!');
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
 
   const isCustom = settings.colorPalette === 'custom';
 
