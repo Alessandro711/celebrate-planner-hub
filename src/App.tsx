@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { subscribeToSettings } from "@/lib/storage";
 import { applyPalette, applyCustomColors } from "@/lib/palettes";
+import { onAuthChange } from "@/lib/auth";
 import Dashboard from "./pages/Dashboard";
 import Guests from "./pages/Guests";
 import WeddingParty from "./pages/WeddingParty";
@@ -20,21 +21,24 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 function PaletteLoader() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
   useEffect(() => {
-    let unsub: (() => void) | null = null;
-    try {
-      unsub = subscribeToSettings((s) => {
-        if (s.colorPalette === 'custom' && s.customColors) {
-          applyCustomColors(s.customColors.primary, s.customColors.secondary, s.customColors.accent);
-        } else if (s.colorPalette) {
-          applyPalette(s.colorPalette);
-        }
-      });
-    } catch {
-      // User not logged in yet — skip palette loading
-    }
-    return () => unsub?.();
+    return onAuthChange((u) => setLoggedIn(!!u));
   }, []);
+
+  useEffect(() => {
+    if (!loggedIn) return;
+    const unsub = subscribeToSettings((s) => {
+      if (s.colorPalette === 'custom' && s.customColors) {
+        applyCustomColors(s.customColors.primary, s.customColors.secondary, s.customColors.accent);
+      } else if (s.colorPalette) {
+        applyPalette(s.colorPalette);
+      }
+    });
+    return () => unsub();
+  }, [loggedIn]);
+
   return null;
 }
 
@@ -60,5 +64,3 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
-
-export default App;
