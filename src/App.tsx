@@ -21,14 +21,19 @@ const queryClient = new QueryClient();
 
 function PaletteLoader() {
   useEffect(() => {
-    const unsub = subscribeToSettings((s) => {
-      if (s.colorPalette === 'custom' && s.customColors) {
-        applyCustomColors(s.customColors.primary, s.customColors.secondary, s.customColors.accent);
-      } else if (s.colorPalette) {
-        applyPalette(s.colorPalette);
-      }
-    });
-    return () => unsub();
+    let unsub: (() => void) | null = null;
+    try {
+      unsub = subscribeToSettings((s) => {
+        if (s.colorPalette === 'custom' && s.customColors) {
+          applyCustomColors(s.customColors.primary, s.customColors.secondary, s.customColors.accent);
+        } else if (s.colorPalette) {
+          applyPalette(s.colorPalette);
+        }
+      });
+    } catch {
+      // User not logged in yet — skip palette loading
+    }
+    return () => unsub?.();
   }, []);
   return null;
 }
